@@ -23,7 +23,7 @@ fun Pantalla1(ViewModel:VMCorrutina){
             Text(text = "Cambiar Color")
         }
         Text(text = ViewModel.textoactual(), Modifier.padding(top = 30.dp))
-        Button(onClick = { ViewModel.bloqueoApp() }, Modifier.padding(top = 30.dp)) {
+        Button(onClick = { ViewModel.fetchData() }, Modifier.padding(top = 30.dp)) {
             Text(text = "LLamar a API")
         }
     }

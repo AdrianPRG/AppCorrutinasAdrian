@@ -5,6 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class VMCorrutina:ViewModel() {
 
@@ -39,14 +44,19 @@ class VMCorrutina:ViewModel() {
         if (_numapis<1){
             _texto=""
         }
-        else _texto="Respuesta de la api $_numapis"
         return _texto
     }
 
-//Bloqueo la app 5 segundos
-    fun bloqueoApp() {
+//Bloqueo de la app 5 segundos pudiendo seguir con el funcionamiento del otro boton
+    fun fetchData() {
         _numapis+=1
-        Thread.sleep(5000)
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO){
+                delay(5000)
+                "Respuesta de la API $_numapis"
+            }
+            _texto=result
+        }
     }
 
 
