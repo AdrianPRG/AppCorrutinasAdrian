@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class VMCorrutina:ViewModel() {
 
@@ -22,6 +23,8 @@ class VMCorrutina:ViewModel() {
     //Texto que muestra el numero de veces llamada la api
     private var _texto by mutableStateOf("")
 
+    //booleano que cambia segun se ha realizado una llamada o no
+    private var _isloading by mutableStateOf(false)
 
     //Cambia el booleano para que ahora se devuelva el otro color
     fun cambiacolor(){
@@ -39,26 +42,40 @@ class VMCorrutina:ViewModel() {
         return color
     }
 
-    //Devuelve el texto segun el numero de veces llamada a la api
+    //Se devuelve el texto actual, no se ponen comprobaciones de si el numapi > 1
+    //Ya que por defecto el texto esta vacio, asi que nada mas ya haya
     fun textoactual():String{
-        if (_numapis<1){
-            _texto=""
-        }
         return _texto
     }
 
-//Bloqueo de la app 5 segundos pudiendo seguir con el funcionamiento del otro boton
-    fun fetchData() {
-        _numapis+=1
+
+    //Devuelve el booleano de si esta cargando o no
+    fun loadingOno():Boolean{
+        return _isloading
+    }
+
+
+    fun fetchData(){
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO){
-                delay(5000)
-                "Respuesta de la API $_numapis"
+            try {
+                _isloading=true
+                llamarApi()
+            }catch (e: Exception){
+                println("Error ${e.message}")
+            } finally {
+                _isloading = false
             }
-            _texto=result
         }
     }
 
+    private suspend fun llamarApi(){
+        val result = withContext(Dispatchers.IO){
+            delay(5000)
+            _numapis+=1
+            "Respuesta de la API $_numapis"
+        }
+        _texto = result
+    }
 
 
 
